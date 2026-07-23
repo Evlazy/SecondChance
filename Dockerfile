@@ -6,12 +6,12 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copy all .csproj files to restore dependencies first (for faster build caching)
-COPY ["src/Webapi/Webapi.csproj", "src/Webapi/"]
+COPY ["src/Webapi/Webapi.csproj", "src/WebApi/"]
 COPY ["src/SecondChance.Domain/SecondChance.Domain.csproj", "src/SecondChance.Domain/"]
 COPY ["src/SecondChance.Application/SecondChance.Application.csproj", "src/SecondChance.Application/"]
 COPY ["src/SecondChance.Infrastructure/SecondChance.Infrastructure.csproj", "src/SecondChance.Infrastructure/"]
 
-RUN dotnet restore "src/Webapi/Webapi.csproj"
+RUN dotnet restore "src/Webapi/WebApi.csproj"
 
 # Copy everything else and build
 COPY . .
