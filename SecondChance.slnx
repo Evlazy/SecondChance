@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="SecondChance.Tests/SecondChance.Tests.csproj" />
+    <Project Path="src/SecondChance.Application/SecondChance.Application.csproj" />
+    <Project Path="src/SecondChance.Domain/SecondChance.Domain.csproj" />
+    <Project Path="src/SecondChance.Infrastructure/SecondChance.Infrastructure.csproj" />
+    <Project Path="src/SecondChance.WebApi/SecondChance.WebApi.csproj" />
+  </Folder>
+</Solution>
