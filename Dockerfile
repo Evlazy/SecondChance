@@ -1,14 +1,15 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-preview AS base
 WORKDIR /app
 EXPOSE 8080
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0-preview AS build
 WORKDIR /src
 
 COPY ["src/SecondChance.WebApi/SecondChance.WebApi.csproj", "src/SecondChance.WebApi/"]
 COPY ["src/SecondChance.Domain/SecondChance.Domain.csproj", "src/SecondChance.Domain/"]
 COPY ["src/SecondChance.Application/SecondChance.Application.csproj", "src/SecondChance.Application/"]
 COPY ["src/SecondChance.Infrastructure/SecondChance.Infrastructure.csproj", "src/SecondChance.Infrastructure/"]
+
 
 RUN dotnet restore "src/SecondChance.WebApi/SecondChance.WebApi.csproj"
 
