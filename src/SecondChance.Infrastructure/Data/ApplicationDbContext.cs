@@ -100,8 +100,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
         modelBuilder.Entity<Category>().HasData(
             new Category { Id = electronicsId, Name = "Electronics", Description = "Phone, Laptop, etc" },
-            new Category { Id = clothingId, Name = "服饰穿搭", Description = "衣服、鞋子、包包等" },
-            new Category { Id = booksId, Name = "图书教材", Description = "课本、小说、专业书籍等" }
+            new Category { Id = clothingId, Name = "Cloth", Description = "Cloth" },
+            new Category { Id = booksId, Name = "Books", Description = "Books" }
         );
 
         string adminRoleId = "a18be9c0-aa65-4af8-bd17-00bd9344e575";
