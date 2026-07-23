@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosClient = axios.create({
-    baseURL:'https://localhost:7109/api',
+    baseURL: 'https://secondchance-api-a8cb.onrender.com/api',
     headers:{
         'Content-Type': 'application/json',
     },
