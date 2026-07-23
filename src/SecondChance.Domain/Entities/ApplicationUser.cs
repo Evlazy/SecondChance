@@ -17,7 +17,7 @@ namespace SecondChance.Domain.Entities
         public DateTime? LastModifiedAt { get; set; }
 
         public virtual ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
-        private ApplicationUser() { }
+        public ApplicationUser() { }
 
         public static ApplicationUser Create(
             string email,
