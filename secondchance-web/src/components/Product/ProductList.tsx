@@ -24,7 +24,6 @@ export default function ProductList() {
     const token = sessionStorage.getItem('token');
 
     if (token) {
-      // Decode JWT token if needed
       parseJwt(token);
     }
 
