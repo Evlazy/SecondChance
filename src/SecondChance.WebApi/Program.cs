@@ -169,12 +169,15 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var dbContext = services.GetRequiredService<ApplicationDbContext>();
+
         dbContext.Database.Migrate();
+
+        await DbInitializer.SeedAsync(services);
     }
-    catch(Exception ex)
+    catch (Exception ex)
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occured while migration the database");
+        logger.LogError(ex, "An error occurred while migrating or seeding the database.");
     }
 }
 
