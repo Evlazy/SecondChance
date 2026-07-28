@@ -69,7 +69,7 @@ namespace SecondChance.Infrastructure.Repository
 
         public async Task<(IEnumerable<Product> Items, int TotalCount)> GetPagedProductsAsync(ProductQueryDto query)
         {
-            var queryable = _dbSet.AsQueryable();
+            var queryable = _dbSet.Include(p => p.Images).AsQueryable();
 
             queryable = queryable.Where(p => p.IsAvailable == true && p.Status == ProductStatus.Available);
 
