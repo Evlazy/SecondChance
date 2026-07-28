@@ -54,11 +54,22 @@ export const productApi = {
       `/Product/${productId}/images`,
       formData,{
         headers:{
-          'Content-Type':'mutipart/form-data',
+          'Content-Type':'multipart/form-data',
         },
       }
     );
     return response.data;
   }
 
+
+//   uploadProductImage: async (productId: string, file: File): Promise<ProductImageResponse> => {
+//   const formData = new FormData();
+//   formData.append('File', file); 
+
+//   const response = await axiosClient.post<ProductImageResponse>(
+//     `/Product/${productId}/images`,
+//     formData
+//   );
+//   return response.data;
+// }
 };
