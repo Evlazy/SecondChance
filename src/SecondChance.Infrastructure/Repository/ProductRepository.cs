@@ -16,22 +16,6 @@ namespace SecondChance.Infrastructure.Repository
         {
         }
 
-        //public async Task<bool> DecreaseStockAsync(Guid productId, int quantity)
-        //{
-        //    var affectedRows = await _context.Database.ExecuteSqlRawAsync(
-        //            @"UPDATE Products
-        //                SET Stock = Stock - {0}
-        //                WHERE Id = {1}
-        //                    AND Status = {2} 
-        //                    AND Stock >= {0}",
-        //            quantity,
-        //            productId,
-        //            (int)ProductStatus.Available
-        //    );
-
-        //    return affectedRows > 0;
-        //}
-
         private static readonly object _dbLock = new object();
 
         public async Task<bool> DecreaseStockAsync(Guid productId, int quantity)
@@ -46,10 +30,10 @@ namespace SecondChance.Infrastructure.Repository
                       WHERE Id = {1}
                         AND Status = {2}
                         AND Stock >= {0}",
-                    quantity,                            // {0}
-                    productId,                           // {1}
-                    (int)ProductStatus.Available,        // {2}
-                    (int)ProductStatus.Unavailable       // {3}
+                    quantity,                           
+                    productId,                          
+                    (int)ProductStatus.Available,       
+                    (int)ProductStatus.Unavailable     
                 );
 
                 return affectedRows > 0;

@@ -266,9 +266,16 @@ namespace SecondChance.Application.Services
                 ProductId = productId
             };
 
-            product.Images.Add(productImage);
-            _unitOfWork.ForceEntryAdded(productImage);
-            await _unitOfWork.SaveChangesAsync();
+            try
+            {
+                product.Images.Add(productImage);
+                _unitOfWork.ForceEntryAdded(productImage);
+                await _unitOfWork.SaveChangesAsync();
+            }
+            catch
+            {
+                throw;
+            }
 
             return productImage;
         }

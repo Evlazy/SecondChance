@@ -13,6 +13,14 @@ export interface Product {
   sellerId: string; 
   status: ProductStatus;
   isAvailable?: boolean;
+  images?: ProductImageResponse[];
+}
+
+export interface ProductImageResponse{
+  id: string;
+  imageUrl: string;
+  isMain: boolean;
+  productId: string;
 }
 
 
@@ -36,5 +44,21 @@ export const productApi = {
       throw new Error("Failed to create product: No data returned from server");
     }
     return response.data.data
+  },
+
+  uploadProductImage: async(productId: string, file: File): Promise<ProductImageResponse> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await axiosClient.post<ProductImageResponse>(
+      `/Product/${productId}/images`,
+      formData,{
+        headers:{
+          'Content-Type':'mutipart/form-data',
+        },
+      }
+    );
+    return response.data;
   }
+
 };
