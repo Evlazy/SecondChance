@@ -13,6 +13,6 @@ namespace SecondChance.Application.DTOs.Product
         public string Condition { get; set; } = string.Empty;
         public Guid CategoryId { get; set; }
         public string SellerId { get; set; } = string.Empty;
-        //public string? MainImageUrl {get;set;}
+        public ICollection<ProductImageResponseDto> Images { get; set; } = new List<ProductImageResponseDto>();
     }
 }

@@ -21,7 +21,14 @@ namespace SecondChance.Application.Mapping
                 Price = product.Price,
                 Condition = product.Condition.ToString(),
                 CategoryId = product.CategoryId,
-                SellerId = product.SellerId
+                SellerId = product.SellerId,
+                Images = product.Images?.Select(img => new ProductImageResponseDto
+                {
+                    Id = img.Id,
+                    ImageUrl = img.ImageUrl,
+                    IsMain = img.IsMain,
+                    ProductId = img.ProductId
+                }).ToList() ?? new List<ProductImageResponseDto>()
             };
         }
     }

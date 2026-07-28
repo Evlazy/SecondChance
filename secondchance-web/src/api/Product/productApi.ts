@@ -27,7 +27,11 @@ export interface ProductImageResponse{
 export const productApi = {
   getAllProducts: async (): Promise<Product[]> => {
     const response = await axiosClient.get<any>('/Product');
-    return response.data.data || [];
+    
+    if (Array.isArray(response.data)) {
+      return response.data;
+    }
+    return response.data.items || response.data.data || [];
   },
 
   freezeProduct: async (id: string, reason: string): Promise<void> => {

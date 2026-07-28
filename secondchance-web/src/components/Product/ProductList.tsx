@@ -62,36 +62,22 @@ export default function ProductList() {
     setIsModalOpen(true);
   };
 
-  const handleImageUploaded = (newImage: ProductImageResponse) => {
-    setProducts(prevProducts =>
-      prevProducts.map(p => {
-        if (p.id === newImage.productId) {
-          const currentImages = p.images || [];
-          return {
-            ...p,
-            images: [...currentImages, newImage]
-          };
-        }
-        return p;
-      })
-    );
+  // Refetch directly from database when an upload completes
+  const handleImageUploaded = (_newImage: ProductImageResponse) => {
+    fetchProducts();
   };
 
-const getImageUrl = (url: string) => {
-  if (!url) return '';
+  const getImageUrl = (url: string) => {
+    if (!url) return '';
 
-  if (url.includes('localhost:')) {
-    const relativePath = url.substring(url.indexOf('/uploads'));
-    return `${API_BASE_URL}${relativePath}`;
-  }
+    // Pass Cloudinary and absolute HTTP/HTTPS URLs directly through
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
 
-  if (url.startsWith('http://') || url.startsWith('https://')) {
-    return url;
-  }
-
-  const formattedPath = url.startsWith('/') ? url : `/${url}`;
-  return `${API_BASE_URL}${formattedPath}`;
-};
+    const formattedPath = url.startsWith('/') ? url : `/${url}`;
+    return `${API_BASE_URL}${formattedPath}`;
+  };
 
   if (loading) return <p style={{ textAlign: 'center', marginTop: '20px' }}>⏳ Loading items from SecondChance Market...</p>;
   if (error) return <p style={{ color: 'red', textAlign: 'center' }}>❌ Error: {error}</p>;
@@ -105,8 +91,12 @@ const getImageUrl = (url: string) => {
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
           {products.map(product => {
-            // Added explicit ProductImageResponse type for img parameter
-            const mainImage = product.images?.find((img: ProductImageResponse) => img.isMain) || product.images?.[0];
+            // Safely check both camelCase and PascalCase key names from API response
+            const mainImage = product.images?.find(
+              (img: any) => img.isMain || img.IsMain
+            ) || product.images?.[0];
+
+            const rawImageUrl = mainImage ? (mainImage.imageUrl || mainImage.imageUrl) : '';
 
             return (
               <div 
@@ -124,9 +114,9 @@ const getImageUrl = (url: string) => {
               >
                 <div>
                   <div style={{ width: '100%', height: '180px', backgroundColor: '#f5f5f5', borderRadius: '6px', overflow: 'hidden', marginBottom: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {mainImage ? (
+                    {rawImageUrl ? (
                       <img 
-                        src={getImageUrl(mainImage.imageUrl)} 
+                        src={getImageUrl(rawImageUrl)} 
                         alt={product.title} 
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       />
