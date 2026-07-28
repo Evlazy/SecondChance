@@ -3,7 +3,7 @@ import { productApi, type Product, type ProductImageResponse } from '../../api/P
 import { IsAdminUser, parseJwt } from '../../utils/jwtHelper';
 import { UploadProductImageModal } from './UploadProductImage';
 
-const API_BASE_URL = "https://secondchance-api-a8cb.onrender.com";
+const API_BASE_URL = "https://secondchance-api-a8cb.onrender.com/api";
 
 export default function ProductList() {
   const [products, setProducts] = useState<Product[]>([]);
