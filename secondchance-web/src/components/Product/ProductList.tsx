@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { productApi, type Product, type ProductImageResponse } from '../../api/Product/productApi';
 import { IsAdminUser, parseJwt } from '../../utils/jwtHelper';
 import { UploadProductImageModal } from './UploadProductImage';
+import { Link } from 'react-router-dom';
 
 const API_BASE_URL = "https://secondchance-api-a8cb.onrender.com/api";
 
@@ -28,17 +29,14 @@ export default function ProductList() {
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');
-
     if (token) {
       parseJwt(token);
     }
-
     fetchProducts();
   }, []);
 
   const handleFreeze = async (productId: string, title: string) => {
     const reason = window.prompt(`You are taking down item: [${title}]\nPlease enter a reason (required):`);
-    
     if (reason === null) return; 
 
     if (!reason.trim()) {
@@ -49,7 +47,6 @@ export default function ProductList() {
     try {
       await productApi.freezeProduct(productId, reason);
       alert('Item taken down successfully! It is now hidden from the store.');
-      
       setProducts(prev => prev.filter(p => p.id !== productId));
     } catch (err: any) {
       console.error("Error during item takedown:", err);
@@ -62,19 +59,15 @@ export default function ProductList() {
     setIsModalOpen(true);
   };
 
-  // Refetch directly from database when an upload completes
   const handleImageUploaded = (_newImage: ProductImageResponse) => {
     fetchProducts();
   };
 
   const getImageUrl = (url: string) => {
     if (!url) return '';
-
-    // Pass Cloudinary and absolute HTTP/HTTPS URLs directly through
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
-
     const formattedPath = url.startsWith('/') ? url : `/${url}`;
     return `${API_BASE_URL}${formattedPath}`;
   };
@@ -91,12 +84,11 @@ export default function ProductList() {
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
           {products.map(product => {
-            // Safely check both camelCase and PascalCase key names from API response
             const mainImage = product.images?.find(
               (img: any) => img.isMain || img.IsMain
             ) || product.images?.[0];
 
-            const rawImageUrl = mainImage ? (mainImage.imageUrl || mainImage.imageUrl) : '';
+            const rawImageUrl = mainImage ? mainImage.imageUrl : '';
 
             return (
               <div 
@@ -113,18 +105,28 @@ export default function ProductList() {
                 }}
               >
                 <div>
-                  <div style={{ width: '100%', height: '180px', backgroundColor: '#f5f5f5', borderRadius: '6px', overflow: 'hidden', marginBottom: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {rawImageUrl ? (
-                      <img 
-                        src={getImageUrl(rawImageUrl)} 
-                        alt={product.title} 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                    ) : (
-                      <span style={{ color: '#aaa', fontSize: '14px' }}>📷 No Image Available</span>
-                    )}
-                  </div>
+                  <Link
+                    to={`/products/${product.id}`}
+                    style={{ textDecoration: 'none', color: 'inherit' }}
+                  >
+                    <div style={{ width: '100%', height: '180px', backgroundColor: '#f5f5f5', borderRadius: '6px', overflow: 'hidden', marginBottom: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {rawImageUrl ? (
+                        <img
+                          src={getImageUrl(rawImageUrl)}
+                          alt={product.title}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <span style={{ color: '#aaa', fontSize: '14px' }}>📷 No Image Available</span>
+                      )}
+                    </div>
 
+                    <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', color: '#333' }}>
+                      {product.title}
+                    </h3>
+                  </Link>
+
+                  {/* Condition & Add Photo Button */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                     <span style={{ backgroundColor: '#e3f2fd', color: '#0d47a1', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold' }}>
                       {product.condition || 'Used'}
@@ -138,14 +140,28 @@ export default function ProductList() {
                     </button>
                   </div>
 
-                  <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', color: '#333' }}>{product.title}</h3>
                   <p style={{ color: '#666', fontSize: '14px', margin: '0 0 10px 0' }}>{product.description}</p>
                 </div>
 
+                {/* Footer / Buttons */}
                 <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#e44d26' }}>${product.price}</span>
                   
                   <div style={{ display: 'flex', gap: '8px' }}>
+                    <Link
+                      to={`/products/${product.id}`}
+                      style={{ 
+                        padding: '6px 12px', 
+                        backgroundColor: '#0066cc', 
+                        color: 'white', 
+                        borderRadius: '4px', 
+                        textDecoration: 'none',
+                        fontSize: '14px'
+                      }}
+                    >
+                      Details
+                    </Link>
+
                     <button style={{ padding: '6px 12px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
                       Contact Seller
                     </button>

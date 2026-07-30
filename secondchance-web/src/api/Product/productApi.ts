@@ -63,17 +63,11 @@ export const productApi = {
       }
     );
     return response.data;
-  }
+  },
 
+  getProductById: async(id: string): Promise<Product> => {
+      const response = await axiosClient.get<Product>(`/Product/${id}`);
+      return response.data;
+  },
 
-//   uploadProductImage: async (productId: string, file: File): Promise<ProductImageResponse> => {
-//   const formData = new FormData();
-//   formData.append('File', file); 
-
-//   const response = await axiosClient.post<ProductImageResponse>(
-//     `/Product/${productId}/images`,
-//     formData
-//   );
-//   return response.data;
-// }
 };

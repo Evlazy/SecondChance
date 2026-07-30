@@ -10,5 +10,6 @@ export const categoryApi = {
     getAllCategories: async(): Promise<Categories[]> => {
         const response = await axiosClient.get<any>('/Product/all-categories');
         return response.data || [];
-    }
+    },
+    
 }

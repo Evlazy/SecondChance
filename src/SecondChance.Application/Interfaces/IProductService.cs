@@ -13,7 +13,7 @@ namespace SecondChance.Application.Interfaces
     {
         Task<ApiResponse<Guid>> CreateProductAsync(CreateProductDto dto, string sellerId);
         Task<(IEnumerable<Product> Items, int TotalCount)> GetPagedProductsAsync(ProductQueryDto query);
-        Task<Product?> GetProductByIdAsync(Guid id);
+        Task<ProductDto?> GetProductByIdAsync(Guid id);
         Task<Product> UpdateProductAsync(Guid id, UpdateProductDto dto, string currentUserId);
         Task<bool> DeleteProductAsync(Guid id, string currentUserId);
         Task<ProductImage> UploadProductImageAsync(Guid productId, UploadProductImageDto dto, string currentUserId);

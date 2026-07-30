@@ -139,9 +139,32 @@ namespace SecondChance.Application.Services
             return await _productRepo.GetPagedProductsAsync(query);
         }
 
-        public async Task<Product?> GetProductByIdAsync(Guid id)
+        public async Task<ProductDto?> GetProductByIdAsync(Guid id)
         {
-            return await _productRepo.GetByIdAsync(id);
+            var product = await _productRepo.GetByIdWithImagesAsync(id);
+
+            if (product == null) throw new KeyNotFoundException("Product not found");
+
+            var dto = new ProductDto
+            {
+                Id = product.Id,
+                Title = product.Title,
+                Description = product.Description,
+                Price = product.Price,
+                Condition = product.Condition.ToString(),
+                CategoryId = product.CategoryId,
+                SellerId = product.SellerId,
+                ProudctStatus = product.Status.ToString(),
+                Images = product.Images.Select(img => new ProductImageResponseDto
+                {
+                    Id = img.Id,
+                    ImageUrl = img.ImageUrl,
+                    IsMain = img.IsMain
+                }).ToList() ?? new List<ProductImageResponseDto>()
+            };
+
+            return dto;
+
         }
 
         public async Task<IEnumerable<ProductImageResponseDto>> GetProductImagesAsync(Guid productId)

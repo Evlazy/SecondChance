@@ -9,11 +9,11 @@ namespace SecondChance.Application.Mapping
 {
     public static class ProductMappingExtension
     {
-        public static ProudctDto ToDto(this Product product)
+        public static ProductDto ToDto(this Product product)
         {
             if (product == null) return null;
 
-            return new ProudctDto
+            return new ProductDto
             {
                 Id = product.Id,
                 Title = product.Title,

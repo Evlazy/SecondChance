@@ -1,75 +1,43 @@
-// import React from 'react';
-import Login from './components/Auth/Login';
-import ProductList from './components/Product/ProductList'; 
-import CreateProduct from './components/Product/CreateProduct';
-import Register from './components/Auth/Register';
-import { MyOrders } from './components/Purchase/MyOrders';
 import React, { useState } from 'react';
+import { BrowserRouter, Routes, Route, Link, useNavigate, Navigate } from 'react-router-dom';
 
+import Login from './components/Auth/Login';
+import Register from './components/Auth/Register';
+import ProductList from './components/Product/ProductList';
+import { ProductDetail } from './components/Product/GetProductById';
+import CreateProduct from './components/Product/CreateProduct';
+import { MyOrders } from './components/Purchase/MyOrders';
 
-type ActiveView = 'products' | 'orders' | 'createProduct';
-
-function App() {
+function AppContent() {
   const hasToken = !!sessionStorage.getItem('token');
-
-  const [activeView, setActiveView] = useState<ActiveView>('products');
   const [view, setView] = useState<'login' | 'register'>('login');
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     sessionStorage.removeItem('token');
     alert("Logout successfully!");
+    navigate('/');
     window.location.reload();
   };
 
-  const renderView = () => {
-    switch (activeView){
-      case 'products' :
-        return <ProductList />;
-      case 'orders' :
-        return <MyOrders />;
-      case 'createProduct' :
-        return <CreateProduct />;
-    }
-  }
-
   return (
     <div style={{ fontFamily: 'sans-serif', backgroundColor: '#f8f9fa', minHeight: '100vh', padding: '20px' }}>
-      
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fff', padding: '10px 20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-        <h1 style={{ margin: 0, fontSize: '24px', color: '#007bff' }}>🎪 SecondChance Marketplace</h1>
+        <Link to="/" style={{ textDecoration: 'none' }}>
+          <h1 style={{ margin: 0, fontSize: '24px', color: '#007bff' }}>🎪 SecondChance Marketplace</h1>
+        </Link>
         
         {hasToken && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-            <button 
-              onClick={() => setActiveView('products')} 
-              style={{
-                ...styles.navButton,
-                color: activeView === 'products' ? '#007bff' : '#666',
-                fontWeight: activeView === 'products' ? '700' : '500'
-              }}
-            >
+            <Link to="/" style={styles.navLink}>
               Browse Products
-            </button>
-            <button 
-              onClick={() => setActiveView('orders')} 
-              style={{
-                ...styles.navButton,
-                color: activeView === 'orders' ? '#007bff' : '#666',
-                fontWeight: activeView === 'orders' ? '700' : '500'
-              }}
-            >
+            </Link>
+            <Link to="/orders" style={styles.navLink}>
               My Orders
-            </button>
-            <button 
-              onClick={() => setActiveView('createProduct')} 
-              style={{
-                ...styles.navButton,
-                color: activeView === 'createProduct' ? '#007bff' : '#666',
-                fontWeight: activeView === 'createProduct' ? '700' : '500'
-              }}
-            >
+            </Link>
+            <Link to="/create-product" style={styles.navLink}>
               List a Product
-            </button>
+            </Link>
             <button onClick={handleLogout} style={styles.logoutButton}>
               Log out
             </button>
@@ -77,7 +45,7 @@ function App() {
         )}
       </header>
       
-<main style={{ marginTop: '20px' }}>
+      <main style={{ marginTop: '20px' }}>
         {!hasToken ? (
           view === 'login' ? (
             <Login onSwitchToRegister={() => setView('register')} />
@@ -85,23 +53,35 @@ function App() {
             <Register onSwitchToLogin={() => setView('login')} />
           )
         ) : (
-          <div>
-            {renderView()}
-          </div>
+          <Routes>
+            <Route path="/" element={<ProductList />} />
+            <Route path="/products/:id" element={<ProductDetail />} />
+            <Route path="/orders" element={<MyOrders />} />
+            <Route path="/create-product" element={<CreateProduct />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
         )}
       </main>
     </div>
   );
 }
 
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
+  );
+}
+
 const styles: Record<string, React.CSSProperties> = {
-  navButton: {
+  navLink: {
     padding: '8px 12px',
-    background: 'none',
-    border: 'none',
+    color: '#007bff',
+    textDecoration: 'none',
     fontSize: '16px',
+    fontWeight: '500',
     cursor: 'pointer',
-    transition: 'color 0.2s',
   },
   logoutButton: {
     padding: '8px 15px',
@@ -113,5 +93,3 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: '600',
   }
 };
-
-export default App;

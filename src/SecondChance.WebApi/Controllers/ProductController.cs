@@ -68,9 +68,7 @@ namespace SecondChance.WebApi.Controllers
         public async Task<IActionResult> GetProductById(Guid id)
         {
             var product = await _productService.GetProductByIdAsync(id);
-            if (product == null) return NotFound(new { Message = "Product not found." });
-
-            return Ok(product.ToDto());
+            return Ok(product);
         }
 
         [HttpPut("{id}")]

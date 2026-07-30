@@ -4,15 +4,16 @@ using System.Text;
 
 namespace SecondChance.Application.DTOs.Product
 {
-    public class ProudctDto
+    public class ProductDto
     {
         public Guid Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public decimal Price { get; set; }
         public string Condition { get; set; } = string.Empty;
+        public string ProudctStatus { get; set; } = string.Empty;
         public Guid CategoryId { get; set; }
         public string SellerId { get; set; } = string.Empty;
-        public ICollection<ProductImageResponseDto> Images { get; set; } = new List<ProductImageResponseDto>();
+        public ICollection<ProductImageResponseDto>? Images { get; set; }
     }
 }
