@@ -24,6 +24,7 @@ namespace SecondChance.WebApi.Controllers
         }
 
         [HttpGet("all-categories")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAllCategories()
         {
             var result =  await _productService.GetAllCategories();

@@ -1,26 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
-namespace SecondChance.Application.DTOs.Auth
+namespace SecondChance.Application.DTOs.Auth;
+
+public sealed class UserRegisterDto
 {
-    public class UserRegisterDto
-    {
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; } = string.Empty;
+    [Required, EmailAddress, StringLength(254)]
+    public string Email { get; set; } = string.Empty;
 
-        [Required]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "密码长度必须在 6 到 100 个字符之间")]
-        public string Password { get; set; } = string.Empty;
+    [Required, StringLength(100, MinimumLength = 12)]
+    public string Password { get; set; } = string.Empty;
 
-        [Required]
-        public string FirstName { get; set; } = string.Empty;
+    [Required, StringLength(100)]
+    public string FirstName { get; set; } = string.Empty;
 
-        [Required]
-        public string LastName { get; set; } = string.Empty;
+    [Required, StringLength(100)]
+    public string LastName { get; set; } = string.Empty;
 
-        public string? AvatarUrl { get; set; }
-    }
+    [Url, StringLength(2_000)]
+    public string? AvatarUrl { get; set; }
 }

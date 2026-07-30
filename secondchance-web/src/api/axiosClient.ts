@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosClient = axios.create({
-    baseURL: 'https://secondchance-api-a8cb.onrender.com/api',
+    baseURL: import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000/api',
 });
 
 axiosClient.interceptors.request.use(

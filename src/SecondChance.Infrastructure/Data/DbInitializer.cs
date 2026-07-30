@@ -23,26 +23,8 @@ namespace SecondChance.Infrastructure.Data
                 }
             }
 
-            var adminEmail = "admin@secondchance.com";
-            var adminUser = await userManager.FindByEmailAsync(adminEmail);
-
-            if(adminUser == null)
-            {
-                var admin = new ApplicationUser
-                {
-                    UserName = adminEmail,
-                    Email = adminEmail,
-                    EmailConfirmed = true,
-                    FirstName = "Admin",
-                    LastName = "Test"
-                };
-
-                var result = await userManager.CreateAsync(admin, "SecurePassword123!");
-                if (result.Succeeded)
-                {
-                    await userManager.AddToRoleAsync(admin, "Admin");
-                }
-            }
+            // Admin accounts must be provisioned through a protected operational process,
+            // never from a predictable username and password committed to the repository.
         }
     }
 }

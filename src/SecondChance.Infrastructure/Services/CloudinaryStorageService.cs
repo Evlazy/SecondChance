@@ -1,66 +1,67 @@
-﻿using CloudinaryDotNet;
+using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Npgsql.BackendMessages;
 using SecondChance.Application.Interfaces;
-using System;
-using System.IO;
-using System.Security.Principal;
-using System.Threading.Tasks;
 
-public class CloudinaryStorageService : IFileStorageService
+namespace SecondChance.Infrastructure.Services;
+
+public sealed class CloudinaryStorageService : IFileStorageService
 {
+    private static readonly HashSet<string> AllowedContentTypes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "image/jpeg", "image/png", "image/webp"
+    };
+
     private readonly Cloudinary _cloudinary;
 
     public CloudinaryStorageService(IConfiguration config)
     {
-        var account = new Account(
-            config["Cloudinary:CloudName"],
-            config["Cloudinary:ApiKey"],
-            config["Cloudinary:ApiSecret"]
-        );
-        _cloudinary = new Cloudinary(account);
+        var cloudName = config["Cloudinary:CloudName"];
+        var apiKey = config["Cloudinary:ApiKey"];
+        var apiSecret = config["Cloudinary:ApiSecret"];
+        if (string.IsNullOrWhiteSpace(cloudName) || string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(apiSecret))
+            throw new InvalidOperationException("Cloudinary configuration is missing.");
+
+        _cloudinary = new Cloudinary(new Account(cloudName, apiKey, apiSecret));
     }
 
     public async Task<string> UploadAsync(IFormFile file, string folderName)
     {
-        if (file == null || file.Length == 0)
-            throw new ArgumentException("File cannot be empty");
+        if (file is null || file.Length is <= 0 or > 2 * 1024 * 1024 || !AllowedContentTypes.Contains(file.ContentType))
+            throw new ArgumentException("Upload a JPEG, PNG, or WebP image no larger than 2 MB.");
 
         await using var stream = file.OpenReadStream();
+        if (!await HasSupportedImageSignatureAsync(stream))
+            throw new ArgumentException("The uploaded content is not a valid JPEG, PNG, or WebP image.");
 
-        var uploadParams = new ImageUploadParams
+        stream.Position = 0;
+        var result = await _cloudinary.UploadAsync(new ImageUploadParams
         {
-            File = new FileDescription(file.FileName, stream),
+            File = new FileDescription("image", stream),
             Folder = folderName,
+            UseFilename = false,
+            UniqueFilename = true,
             Transformation = new Transformation().Quality("auto").FetchFormat("auto")
-        };
+        });
 
-        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+        if (result.Error is not null || result.SecureUrl is null)
+            throw new InvalidOperationException("Image upload failed.");
 
-        if (uploadResult.Error != null)
-        {
-            throw new Exception($"Cloudinary upload failed: {uploadResult.Error.Message}");
-        }
-
-        return uploadResult.SecureUrl.ToString();
+        return result.SecureUrl.ToString();
     }
 
-    public async Task DeleteAsync(string fileUrl)
+    // ProductImage currently stores only the delivery URL. Store Cloudinary PublicId in a future migration
+    // before enabling destructive deletion, so URLs cannot be parsed into an unintended asset id.
+    public Task DeleteAsync(string fileUrl) => Task.CompletedTask;
+
+    private static async Task<bool> HasSupportedImageSignatureAsync(Stream stream)
     {
-        if (string.IsNullOrEmpty(fileUrl)) return;
-
-        // Extract the public ID from the Cloudinary URL to support deletion
-        var uri = new Uri(fileUrl);
-        var pathSegments = uri.AbsolutePath.Split('/');
-
-        // Get filename without extension
-        var fileName = Path.GetFileNameWithoutExtension(uri.AbsolutePath);
-        var folder = pathSegments[pathSegments.Length - 2];
-        var publicId = $"{folder}/{fileName}";
-
-        var deletionParams = new DeletionParams(publicId);
-        await _cloudinary.DestroyAsync(deletionParams);
+        var header = new byte[12];
+        var count = await stream.ReadAsync(header);
+        return count >= 3 &&
+               ((header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF) ||
+                (count >= 8 && header[..8].SequenceEqual(new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A })) ||
+                (count >= 12 && header[..4].SequenceEqual("RIFF"u8) && header[8..12].SequenceEqual("WEBP"u8)));
     }
 }

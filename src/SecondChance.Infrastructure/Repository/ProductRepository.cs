@@ -29,6 +29,7 @@ namespace SecondChance.Infrastructure.Repository
                           IsAvailable = CASE WHEN Stock - {0} = 0 THEN 0 ELSE IsAvailable END
                       WHERE Id = {1}
                         AND Status = {2}
+                        AND IsAvailable = 1
                         AND Stock >= {0}",
                     quantity,                           
                     productId,                          

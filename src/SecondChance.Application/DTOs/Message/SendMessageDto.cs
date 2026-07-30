@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.ComponentModel.DataAnnotations;
 
-namespace SecondChance.Application.DTOs.Message
+namespace SecondChance.Application.DTOs.Message;
+
+public sealed class SendMessageDto
 {
-    public class SendMessageDto
-    {
-        public string Content { get; set; } = null!;
-    }
+    [Required, StringLength(4_000, MinimumLength = 1)]
+    public string Content { get; set; } = string.Empty;
 }

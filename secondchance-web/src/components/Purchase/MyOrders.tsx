@@ -72,21 +72,6 @@ const fetchOrders = async (tab: TabType) => {
         }
     };
 
-    const handleConfirmPayment = async (orderId: string) => {
-        setActioningOrderId(orderId);
-        setErrorMsg(null);
-
-        try{
-            await purchaseApi.confirmPayment(orderId);
-            await fetchOrders(activeTab);
-
-        }catch(err: any){
-            setErrorMsg(err.response?.data?.message || "Payment confirmation failed.");
-        } finally{
-            setActioningOrderId(null);
-        }
-    };
-
     const getStatusBadgeStyle = (status: OrderStatus) => {
         switch (status) {
             case OrderStatus.Paid:
@@ -141,7 +126,6 @@ return (
       ) : (
         <div style={styles.ordersGrid}>
           {orders.map((order) => {
-            console.log("Raw order payload from C#:", order);
             const isBuyer = order.buyerId === currentUser?.id;
             const isPendingPayment = order.status === OrderStatus.Pending;
 
@@ -180,13 +164,6 @@ return (
                 {/* 🛡️ Secure Authority check directly on the UI level */}
                 {isPendingPayment && isBuyer && activeTab === "purchases" && (
                   <div style={styles.actionContainer}>
-                    <button
-                      onClick={() => handleConfirmPayment(order.id)}
-                      disabled={actioningOrderId !== null}
-                      style={{ ...styles.button, ...styles.payButton }}
-                    >
-                      {actioningOrderId === order.id ? "Processing..." : "Confirm Payment"}
-                    </button>
                     <button
                       onClick={() => handleCancelOrder(order.id)}
                       disabled={actioningOrderId !== null}

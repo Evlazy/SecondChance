@@ -253,7 +253,6 @@ namespace SecondChance.Application.Services
             product.Description = dto.Description;
             product.Price = dto.Price;
             product.Condition = dto.Condition;
-            product.Status = dto.Status;
             product.LastModifiedAt = DateTime.UtcNow;
             product.LastModifiedBy = currentUserId;
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { productApi, type Product, type ProductImageResponse } from '../../api/Product/productApi';
-import { IsAdminUser, parseJwt } from '../../utils/jwtHelper';
+import { IsAdminUser } from '../../utils/jwtHelper';
 import { UploadProductImageModal } from './UploadProductImage';
 import { Link } from 'react-router-dom';
 
@@ -27,13 +27,7 @@ export default function ProductList() {
     }
   };
 
-  useEffect(() => {
-    const token = sessionStorage.getItem('token');
-    if (token) {
-      parseJwt(token);
-    }
-    fetchProducts();
-  }, []);
+  useEffect(() => { fetchProducts(); }, []);
 
   const handleFreeze = async (productId: string, title: string) => {
     const reason = window.prompt(`You are taking down item: [${title}]\nPlease enter a reason (required):`);

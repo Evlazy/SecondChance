@@ -1,17 +1,11 @@
-﻿using SecondChance.Domain.Entities;
-using SecondChance.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using SecondChance.Domain.Entities;
 
-namespace SecondChance.Application.DTOs.Product
+namespace SecondChance.Application.DTOs.Product;
+
+public sealed class UpdateProductDto
 {
-    public class UpdateProductDto
-    {
-        public string Title { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public decimal Price { get; set; }
-        public ProductCondition Condition { get; set; }
-        public ProductStatus Status { get; set; }
-    }
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public decimal Price { get; set; }
+    public ProductCondition Condition { get; set; }
 }

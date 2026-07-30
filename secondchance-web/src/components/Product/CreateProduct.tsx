@@ -31,8 +31,6 @@ const fetchCategories = async () => {
   fetchCategories();
 }, []);
 
-  console.log("Categories: ", categories);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevents full-page web reloads
     setError('');

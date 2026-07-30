@@ -1,193 +1,8 @@
-//using FluentValidation;
-//using Microsoft.AspNetCore.Authentication.JwtBearer;
-//using Microsoft.AspNetCore.Identity;
-//using Microsoft.EntityFrameworkCore;
-//using Microsoft.IdentityModel.Tokens;
-//using Microsoft.OpenApi;
-//using SecondChance.Application;
-//using SecondChance.Application.Interfaces;
-//using SecondChance.Application.Services;
-//using SecondChance.Application.Validators;
-//using SecondChance.Domain.Entities;
-//using SecondChance.Domain.Interfaces;
-//using SecondChance.Infrastructure;
-//using SecondChance.Infrastructure.Data;
-//using SecondChance.Infrastructure.Repository;
-//using SecondChance.Infrastructure.Services;
-//using SecondChance.WebApi.Middleware;
-//using System.Text;
-//using System.Text.Json.Serialization;
-
-//var builder = WebApplication.CreateBuilder(args);
-
-//builder.Services.AddValidatorsFromAssemblyContaining<CreateProductDtoValidator>();
-
-//// Add services to the container.
-//// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-//builder.Services.AddApplicationServices();
-//builder.Services.AddInfrastructureServices(builder.Configuration);
-//builder.Services.AddControllers()
-//    .AddJsonOptions(options =>
-//    {
-//        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-//    });
-//builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
-
-//builder.Services.AddScoped<IAuthService, AuthService>();
-//builder.Services.AddScoped<ITokenService, TokenService>();
-//builder.Services.AddScoped<IProductRepository, ProductRepository>();
-//builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-//builder.Services.AddScoped<IProductService, ProductService>();
-//builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-//builder.Services.AddScoped<IFileStorageService, LocalFileStorageService>();
-//builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
-//builder.Services.AddScoped<IMessageRepository, MessageRepository>();
-//builder.Services.AddScoped<IMessageService, MessageService>();
-//builder.Services.AddScoped<IAdminProductService, AdminProductService>();
-//builder.Services.AddScoped<IPurchaseService, PurchaseService>();
-
-
-
-
-//builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-//{
-//    options.Password.RequireDigit = true;
-//    options.Password.RequiredLength = 10;
-//    options.Password.RequireNonAlphanumeric = false;
-//    options.Password.RequireUppercase = false;
-//    options.User.RequireUniqueEmail = true;
-//})
-//.AddEntityFrameworkStores<ApplicationDbContext>()
-//.AddDefaultTokenProviders();
-
-//builder.Services.AddAuthentication(options =>
-//{
-//    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-//    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-//    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-//})
-//.AddJwtBearer(options =>
-//{
-//    options.TokenValidationParameters = new TokenValidationParameters
-//    {
-//        ValidateIssuer = true,
-//        ValidateAudience = false,
-//        ValidateLifetime = true,
-//        ValidateIssuerSigningKey = true,
-//        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
-//        //ValidAudience = builder.Configuration["JwtSettings:Audience"],
-//        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]!)),
-//        ClockSkew = TimeSpan.Zero
-//    };
-//});
-
-
-
-//builder.Services.ConfigureApplicationCookie(options =>
-//{
-//    options.Events.OnRedirectToLogin = context =>
-//    {
-//        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-//        return Task.CompletedTask;
-//    };
-//});
-
-//builder.Services.AddSwaggerGen(options =>
-//{
-//    options.SwaggerDoc("v1", new OpenApiInfo
-//    {
-//        Title = "MealLink API",
-//        Version = "v1"
-//    });
-
-//    options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
-//    {
-//        Name = "Authorization",
-//        Type = SecuritySchemeType.Http,
-//        Scheme = "bearer",
-//        BearerFormat = "JWT",
-//        In = ParameterLocation.Header,
-//        Description = "Enter your JWT token. 'Bearer' is added automatically."
-//    });
-
-//    options.AddSecurityRequirement(document =>
-//        new OpenApiSecurityRequirement
-//        {
-//            [new OpenApiSecuritySchemeReference("bearer", document)] =
-//                new List<string>()
-//        });
-//});
-
-
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("ReactAppPolicy", policy =>
-//    {
-//        //policy.WithOrigins("http://localhost:5173")
-//        policy.AllowAnyOrigin()
-//            .AllowAnyHeader()
-//            .AllowAnyMethod();
-//    });
-//});
-
-//var app = builder.Build();
-//app.UseCors("AllowReactApp");
-//app.UseMiddleware<ExceptionMiddleware>();
-
-////if (app.Environment.IsDevelopment())
-////{
-////    app.UseSwagger();
-////    app.UseSwaggerUI();
-////}
-
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseHttpsRedirection();
-//}
-
-//app.UseSwagger();
-//app.UseSwaggerUI(c =>
-//{
-//    c.SwaggerEndpoint("/swagger/v1/swagger.json", "MealLink API v1");
-//    c.RoutePrefix = "swagger";
-//});
-
-//app.UseStaticFiles();
-//app.UseHttpsRedirection();
-
-//app.UseRouting();
-
-//app.UseAuthentication();
-//app.UseAuthorization();
-
-//app.MapControllers();
-
-//using (var scope = app.Services.CreateScope())
-//{
-//    var services = scope.ServiceProvider;
-//    try
-//    {
-//        var dbContext = services.GetRequiredService<ApplicationDbContext>();
-
-//        dbContext.Database.Migrate();
-
-//        await DbInitializer.SeedAsync(services);
-//    }
-//    catch (Exception ex)
-//    {
-//        var logger = services.GetRequiredService<ILogger<Program>>();
-//        logger.LogError(ex, "An error occurred while migrating or seeding the database.");
-//    }
-//}
-
-//app.Run();
-
-
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using SecondChance.Application;
@@ -203,27 +18,29 @@ using SecondChance.Infrastructure.Services;
 using SecondChance.WebApi.Middleware;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Ensure wwwroot exists before building the app so WebRootPath isn't null
-var wwwrootPath = Path.Combine(builder.Environment.ContentRootPath, "wwwroot");
-if (!Directory.Exists(wwwrootPath))
+var jwtKey = builder.Configuration["JwtSettings:Key"];
+var jwtIssuer = builder.Configuration["JwtSettings:Issuer"];
+var jwtAudience = builder.Configuration["JwtSettings:Audience"];
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
+
+if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 64 ||
+    string.IsNullOrWhiteSpace(jwtIssuer) || string.IsNullOrWhiteSpace(jwtAudience) ||
+    allowedOrigins is not { Length: > 0 })
 {
-    Directory.CreateDirectory(wwwrootPath);
+    throw new InvalidOperationException(
+        "Missing required security configuration. Set JwtSettings:Key, JwtSettings:Issuer, " +
+        "JwtSettings:Audience, and Cors:AllowedOrigins through environment variables or a secret store.");
 }
 
 builder.Services.AddValidatorsFromAssemblyContaining<CreateProductDtoValidator>();
-
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
-
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    });
-
+builder.Services.AddControllers().AddJsonOptions(options =>
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -242,116 +59,93 @@ builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = true;
-    options.Password.RequiredLength = 10;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = false;
+    options.Password.RequiredLength = 12;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
     options.User.RequireUniqueEmail = true;
+    options.Lockout.AllowedForNewUsers = true;
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = false,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]!)),
-        ClockSkew = TimeSpan.Zero
-    };
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = jwtIssuer,
+            ValidateAudience = true,
+            ValidAudience = jwtAudience,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
 });
 
-builder.Services.ConfigureApplicationCookie(options =>
+builder.Services.AddRateLimiter(options =>
 {
-    options.Events.OnRedirectToLogin = context =>
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddFixedWindowLimiter("auth", limiter =>
     {
-        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-        return Task.CompletedTask;
-    };
+        limiter.PermitLimit = 5;
+        limiter.Window = TimeSpan.FromMinutes(1);
+        limiter.QueueLimit = 0;
+    });
 });
 
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "MealLink API",
-        Version = "v1"
-    });
-
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "SecondChance API", Version = "v1" });
     options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
     {
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Enter your JWT token."
-    });
-
-    options.AddSecurityRequirement(document =>
-        new OpenApiSecurityRequirement
-        {
-            [new OpenApiSecuritySchemeReference("bearer", document)] =
-                new List<string>()
-        });
-});
-
-// Configure CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowReactApp", policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        Name = "Authorization", Type = SecuritySchemeType.Http, Scheme = "bearer",
+        BearerFormat = "JWT", In = ParameterLocation.Header
     });
 });
+
+builder.Services.AddCors(options => options.AddPolicy("ReactApp", policy =>
+    policy.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod()));
 
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
-
-app.UseSwagger();
-app.UseSwaggerUI(c =>
+app.Use(async (context, next) =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "MealLink API v1");
-    c.RoutePrefix = "swagger";
+    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Append("X-Frame-Options", "DENY");
+    context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
+    await next();
 });
 
-app.UseCors("AllowReactApp");
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+}
 
-app.UseStaticFiles();
+app.UseHttpsRedirection();
+app.UseCors("ReactApp");
+app.UseRateLimiter();
 
-app.UseRouting();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    try
-    {
-        var dbContext = services.GetRequiredService<ApplicationDbContext>();
-        dbContext.Database.Migrate();
-        await DbInitializer.SeedAsync(services);
-    }
-    catch (Exception ex)
-    {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while migrating or seeding the database.");
-    }
-}
 
 app.Run();
