@@ -60,9 +60,18 @@ public sealed class CloudinaryStorageService : IFileStorageService
     {
         var header = new byte[12];
         var count = await stream.ReadAsync(header);
-        return count >= 3 &&
-               ((header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF) ||
-                (count >= 8 && header[..8].SequenceEqual(new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A })) ||
-                (count >= 12 && header[..4].SequenceEqual("RIFF"u8) && header[8..12].SequenceEqual("WEBP"u8)));
+        if (count < 3) return false;
+
+        if (header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF)
+            return true;
+
+        ReadOnlySpan<byte> pngSignature = new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A };
+        if (count >= 8 && header.AsSpan(0, 8).SequenceEqual(pngSignature))
+            return true;
+
+        if (count >= 12 && header.AsSpan(0, 4).SequenceEqual("RIFF"u8) && header.AsSpan(8, 4).SequenceEqual("WEBP"u8))
+            return true;
+
+        return false;
     }
 }
