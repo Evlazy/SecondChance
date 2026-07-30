@@ -3,6 +3,7 @@ using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using SecondChance.Application.Interfaces;
+using System.Linq;
 
 namespace SecondChance.Infrastructure.Services;
 
