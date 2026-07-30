@@ -159,6 +159,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseCors("ReactApp");
 
+app.UseHttpsRedirection();
 app.UseRateLimiter();
 
 if (app.Environment.IsDevelopment())
