@@ -25,6 +25,7 @@ var builder = WebApplication.CreateBuilder(args);
 // --- 1. Configuration Setup ---
 var jwtKey = builder.Configuration["JwtSettings:Key"];
 var jwtIssuer = builder.Configuration["JwtSettings:Issuer"];
+var jwtAudience = builder.Configuration["JwtSettings:Audience"];
 
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
     ?? builder.Configuration.GetSection("Cors:AllowedOrigins").GetChildren().Select(c => c.Value).OfType<string>().ToArray();
@@ -35,10 +36,11 @@ if (allowedOrigins is not { Length: > 0 })
 }
 
 // Ensure JWT Key and Issuer are present
-if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 64 || string.IsNullOrWhiteSpace(jwtIssuer))
+if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 64 ||
+    string.IsNullOrWhiteSpace(jwtIssuer) || string.IsNullOrWhiteSpace(jwtAudience))
 {
     throw new InvalidOperationException(
-        "Missing required security configuration. Set JwtSettings:Key and JwtSettings:Issuer.");
+        "Missing required security configuration. Set JwtSettings:Key, JwtSettings:Issuer, and JwtSettings:Audience.");
 }
 
 // --- 2. Service Registration ---
@@ -81,7 +83,6 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// JWT Authentication (Audience Disabled)
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -89,7 +90,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             ValidateIssuer = true,
             ValidIssuer = jwtIssuer,
-            ValidateAudience = false, // Audience check turned off
+            ValidateAudience = true,
+            ValidAudience = jwtAudience,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
@@ -131,15 +133,13 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-// CORS Setup
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("ReactApp", policy =>
     {
-        policy.SetIsOriginAllowed(_ => true) // Dynamically match request origin
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+              .AllowAnyMethod();
     });
 });
 
@@ -161,10 +161,9 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseRouting();
-app.UseCors("ReactApp"); 
-
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseCors("ReactApp");
 app.UseRateLimiter();
 
 if (app.Environment.IsDevelopment())
