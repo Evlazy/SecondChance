@@ -22,21 +22,23 @@ using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- 1. Configuration Validation ---
+// --- 1. Configuration Setup ---
 var jwtKey = builder.Configuration["JwtSettings:Key"];
 var jwtIssuer = builder.Configuration["JwtSettings:Issuer"];
-var jwtAudience = builder.Configuration["JwtSettings:Audience"];
 
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
     ?? builder.Configuration.GetSection("Cors:AllowedOrigins").GetChildren().Select(c => c.Value).OfType<string>().ToArray();
 
-if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 64 ||
-    string.IsNullOrWhiteSpace(jwtIssuer) || string.IsNullOrWhiteSpace(jwtAudience) ||
-    allowedOrigins is not { Length: > 0 })
+if (allowedOrigins is not { Length: > 0 })
+{
+    allowedOrigins = new[] { "http://localhost:5173", "https://secondchance-web.onrender.com" };
+}
+
+// Ensure JWT Key and Issuer are present
+if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 64 || string.IsNullOrWhiteSpace(jwtIssuer))
 {
     throw new InvalidOperationException(
-        "Missing required security configuration. Set JwtSettings:Key, JwtSettings:Issuer, " +
-        "JwtSettings:Audience, and Cors:AllowedOrigins through environment variables or a secret store.");
+        "Missing required security configuration. Set JwtSettings:Key and JwtSettings:Issuer.");
 }
 
 // --- 2. Service Registration ---
@@ -63,6 +65,7 @@ builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IAdminProductService, AdminProductService>();
 builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 
+// Identity Configuration
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = true;
@@ -78,6 +81,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
+// JWT Authentication (Audience Disabled)
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -85,8 +89,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             ValidateIssuer = true,
             ValidIssuer = jwtIssuer,
-            ValidateAudience = true,
-            ValidAudience = jwtAudience,
+            ValidateAudience = false, // Audience check turned off
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
@@ -94,6 +97,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+// Authorization Fallback Policy
 builder.Services.AddAuthorization(options =>
 {
     options.FallbackPolicy = new AuthorizationPolicyBuilder()
@@ -101,6 +105,7 @@ builder.Services.AddAuthorization(options =>
         .Build();
 });
 
+// Rate Limiter
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -112,6 +117,7 @@ builder.Services.AddRateLimiter(options =>
     });
 });
 
+// Swagger Documentation
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "SecondChance API", Version = "v1" });
@@ -125,18 +131,19 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+// CORS Setup
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("ReactApp", policy =>
     {
-        policy.SetIsOriginAllowed(_ => true)
-              .WithOrigins(allowedOrigins)
+        policy.SetIsOriginAllowed(_ => true) // Dynamically match request origin
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
     });
 });
 
+// --- 3. Middleware Pipeline ---
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
@@ -154,10 +161,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
-
 app.UseRouting();
-app.UseCors("ReactApp");
+app.UseCors("ReactApp"); 
 
 app.UseHttpsRedirection();
 app.UseRateLimiter();
