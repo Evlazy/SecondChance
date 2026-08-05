@@ -117,35 +117,26 @@ builder.Services.AddAuthentication(options =>
     {
         OnAuthenticationFailed = context =>
         {
-            var logger = context.HttpContext.RequestServices
-                .GetRequiredService<ILoggerFactory>()
-                .CreateLogger("JwtAuthentication");
-            logger.LogWarning("JWT authentication failed: {Reason}", context.Exception.Message);
+            // Use Console.WriteLine to bypass ASP.NET log level filtering on Render
+            Console.WriteLine($"[JWT ERROR] Authentication Failed: {context.Exception.Message}");
             return Task.CompletedTask;
         },
         OnChallenge = context =>
         {
-            var logger = context.HttpContext.RequestServices
-                .GetRequiredService<ILoggerFactory>()
-                .CreateLogger("JwtAuthentication");
-            logger.LogWarning(
-                "JWT challenge for {Path}. Authorization header present: {HasAuthorizationHeader}. Error: {Error}. Description: {Description}",
-                context.Request.Path,
-                context.Request.Headers.ContainsKey("Authorization"),
-                context.Error,
-                context.ErrorDescription);
+            Console.WriteLine($"[JWT ERROR] Challenge for {context.Request.Path}. Auth Header Present: {context.Request.Headers.ContainsKey("Authorization")}. Error: {context.ErrorDescription}");
             return Task.CompletedTask;
         }
     };
 });
 
 // Authorization Fallback Policy
-builder.Services.AddAuthorization(options =>
-{
-    options.FallbackPolicy = new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        .Build();
-});
+//builder.Services.AddAuthorization(options =>
+//{
+//    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+//        .RequireAuthenticatedUser()
+//        .Build();
+//});
+builder.Services.AddAuthorization();
 
 // Rate Limiter
 builder.Services.AddRateLimiter(options =>
