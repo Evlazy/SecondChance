@@ -18,7 +18,7 @@ export default function Login({ onSwitchToRegister }: LoginProps) {
     try {
       const data = await authApi.login(email, password);
       sessionStorage.setItem('token', data.token);
-      window.location.assign('/');
+      window.location.href = '/';
     } catch (err: any) {
       setError(err.response?.status === 429
         ? 'Too many attempts. Please wait one minute and try again.'
