@@ -32,7 +32,7 @@ var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get
 
 if (allowedOrigins is not { Length: > 0 })
 {
-    allowedOrigins = new[] { "http://localhost:5173", "https://secondchance-web.onrender.com" };
+    allowedOrigins = new[] { "http://localhost:5173", "https://secondchance-frontend.onrender.com" };
 }
 
 // Ensure JWT Key and Issuer are present
