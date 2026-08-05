@@ -117,6 +117,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .CreateLogger("JwtAuthentication");
                 logger.LogWarning("JWT authentication failed: {Reason}", context.Exception.Message);
                 return Task.CompletedTask;
+            },
+            OnChallenge = context =>
+            {
+                var logger = context.HttpContext.RequestServices
+                    .GetRequiredService<ILoggerFactory>()
+                    .CreateLogger("JwtAuthentication");
+                logger.LogWarning(
+                    "JWT challenge for {Path}. Authorization header present: {HasAuthorizationHeader}. Error: {Error}. Description: {Description}",
+                    context.Request.Path,
+                    context.Request.Headers.ContainsKey("Authorization"),
+                    context.Error,
+                    context.ErrorDescription);
+                return Task.CompletedTask;
             }
         };
     });
