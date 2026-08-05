@@ -30,6 +30,16 @@ var jwtAudience = builder.Configuration["JwtSettings:Audience"];
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
     ?? builder.Configuration.GetSection("Cors:AllowedOrigins").GetChildren().Select(c => c.Value).OfType<string>().ToArray();
 
+// Render environment values are plain strings. Normalize only harmless copy/paste wrappers
+// so an origin such as "[https://example.com]" does not silently fail exact CORS matching.
+allowedOrigins = allowedOrigins
+    .Select(origin => origin.Trim().Trim('[', ']', '"', '\''))
+    .Where(origin => Uri.TryCreate(origin, UriKind.Absolute, out var uri) &&
+                     (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps) &&
+                     string.IsNullOrEmpty(uri.PathAndQuery.Trim('/')))
+    .Distinct(StringComparer.OrdinalIgnoreCase)
+    .ToArray();
+
 if (allowedOrigins is not { Length: > 0 })
 {
     allowedOrigins = new[] { "http://localhost:5173", "https://secondchance-frontend.onrender.com" };
@@ -146,6 +156,8 @@ builder.Services.AddCors(options =>
 
 // --- 3. Middleware Pipeline ---
 var app = builder.Build();
+
+app.Logger.LogInformation("Configured CORS origins: {Origins}", string.Join(", ", allowedOrigins));
 
 app.UseMiddleware<ExceptionMiddleware>();
 
