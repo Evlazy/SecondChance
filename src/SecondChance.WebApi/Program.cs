@@ -16,6 +16,7 @@ using SecondChance.Infrastructure.Data;
 using SecondChance.Infrastructure.Repository;
 using SecondChance.Infrastructure.Services;
 using SecondChance.WebApi.Middleware;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
@@ -30,8 +31,7 @@ var jwtAudience = builder.Configuration["JwtSettings:Audience"];
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
     ?? builder.Configuration.GetSection("Cors:AllowedOrigins").GetChildren().Select(c => c.Value).OfType<string>().ToArray();
 
-// Render environment values are plain strings. Normalize only harmless copy/paste wrappers
-// so an origin such as "[https://example.com]" does not silently fail exact CORS matching.
+
 allowedOrigins = allowedOrigins
     .Select(origin => origin.Trim().Trim('[', ']', '"', '\''))
     .Where(origin => Uri.TryCreate(origin, UriKind.Absolute, out var uri) &&
@@ -93,6 +93,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -105,7 +106,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
-            ClockSkew = TimeSpan.Zero
+
+            NameClaimType = "nameid",
+            RoleClaimType = "role",
+
+            ClockSkew = TimeSpan.FromSeconds(5)
         };
     });
 
