@@ -52,8 +52,7 @@ public sealed class CloudinaryStorageService : IFileStorageService
         return result.SecureUrl.ToString();
     }
 
-    // ProductImage currently stores only the delivery URL. Store Cloudinary PublicId in a future migration
-    // before enabling destructive deletion, so URLs cannot be parsed into an unintended asset id.
+
     public Task DeleteAsync(string fileUrl) => Task.CompletedTask;
 
     private static async Task<bool> HasSupportedImageSignatureAsync(Stream stream)

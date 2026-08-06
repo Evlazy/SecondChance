@@ -22,5 +22,6 @@ namespace SecondChance.Application.Interfaces
         Task<bool> ToggleProductFavoriteAsync(Guid productId, string currentUserId);
         Task<IEnumerable<ProductCardDto>> GetUserFavoritesAsync(string userId);
         Task<IEnumerable<CategoryDto>> GetAllCategories();
+        Task<IEnumerable<ProductDto>> GetMyListingProducts(string userId);
     }
 }

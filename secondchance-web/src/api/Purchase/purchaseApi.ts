@@ -34,14 +34,6 @@ export interface ApiResponse<T> {
 }
 
 export const purchaseApi = {
-    // getMyPurchases: async (): Promise<Order[]> => {
-    //     const response = await axiosClient.get<ApiResponse<Order[]>>('/Purchase/my-purchases');
-
-    //     if(response.data?.success){
-    //         return response.data || [];
-    //     }
-    //     return [];
-    // },
 
     getMyPurchases: async (): Promise<Order[]> => {
 

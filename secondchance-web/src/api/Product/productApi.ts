@@ -70,4 +70,8 @@ export const productApi = {
       return response.data;
   },
 
+  getMyListingProducts:  async(): Promise<Product[]> => {
+    const response = await axiosClient.get<Product[]>(`/Product/my-listing`);
+    return response.data;
+  }
 };

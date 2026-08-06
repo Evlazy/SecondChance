@@ -231,5 +231,17 @@ namespace SecondChance.WebApi.Controllers
             return Ok(myFavorites);
         }
 
+        [HttpGet("my-listing")]
+        public async Task<IActionResult> GetMyListingProducts()
+        {
+            var currentUserID = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(currentUserID))
+            {
+                return Unauthorized("You must login to see your listings");
+            }
+            var listingProducts = await _productService.GetMyListingProducts(currentUserID);
+            return Ok(listingProducts);
+        }
+
     }
 }

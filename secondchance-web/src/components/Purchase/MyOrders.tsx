@@ -161,7 +161,6 @@ return (
                   </div>
                 </div>
 
-                {/* 🛡️ Secure Authority check directly on the UI level */}
                 {isPendingPayment && isBuyer && activeTab === "purchases" && (
                   <div style={styles.actionContainer}>
                     <button

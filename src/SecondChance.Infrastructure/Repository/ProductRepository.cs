@@ -119,6 +119,7 @@ namespace SecondChance.Infrastructure.Repository
         public async Task<IEnumerable<Product>> GetProductBysellerIdAsync(string sellerId)
         {
             return await _dbSet
+                .Include(p => p.Images)
                 .Where(p => p.SellerId == sellerId && p.Status == ProductStatus.Available)
                 .ToListAsync();
         }

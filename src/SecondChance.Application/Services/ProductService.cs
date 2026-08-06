@@ -1,4 +1,5 @@
-﻿using SecondChance.Application.DTOs.Category;
+﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using SecondChance.Application.DTOs.Category;
 using SecondChance.Application.DTOs.Common;
 using SecondChance.Application.DTOs.Product;
 using SecondChance.Application.Interfaces;
@@ -132,6 +133,32 @@ namespace SecondChance.Application.Services
                 LastModifiedAt = c.LastModifiedAt,
                 LastModifiedBy = c.LastModifiedBy
             }).ToList();
+        }
+
+
+        public async Task<IEnumerable<ProductDto>> GetMyListingProducts(string userId)
+        {
+            var listingProducts = await _productRepo.GetProductBysellerIdAsync(userId);
+            var dto = listingProducts.Select(product => new ProductDto
+            {
+                Id = product.Id,
+                Title = product.Title,
+                Description = product.Description,
+                Price = product.Price,
+                Condition = product.Condition.ToString(),
+                ProudctStatus = product.Status.ToString(),
+                CategoryId = product.CategoryId,
+                SellerId = product.SellerId,
+                Images = product.Images.Select(img => new ProductImageResponseDto
+                {
+                    Id = img.Id,
+                    ImageUrl = img.ImageUrl,
+                    IsMain = img.IsMain,
+                    ProductId = img.ProductId
+                }).ToList() ?? new List<ProductImageResponseDto>()
+            }).ToList();
+
+            return dto;
         }
 
         public async Task<(IEnumerable<Product> Items, int TotalCount)> GetPagedProductsAsync(ProductQueryDto query)

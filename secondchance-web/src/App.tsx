@@ -4,6 +4,8 @@ import { BrowserRouter, Routes, Route, Link, useNavigate, Navigate } from 'react
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import ProductList from './components/Product/ProductList';
+import MyListingProduct from './components/Product/GetMyProductListing';
+
 import { ProductDetail } from './components/Product/GetProductById';
 import CreateProduct from './components/Product/CreateProduct';
 import { MyOrders } from './components/Purchase/MyOrders';
@@ -38,6 +40,9 @@ function AppContent() {
             <Link to="/create-product" style={styles.navLink}>
               List a Product
             </Link>
+            <Link to="/my-listing" style={styles.navLink}>
+              My Listings
+            </Link>
             <button onClick={handleLogout} style={styles.logoutButton}>
               Log out
             </button>
@@ -58,6 +63,7 @@ function AppContent() {
             <Route path="/products/:id" element={<ProductDetail />} />
             <Route path="/orders" element={<MyOrders />} />
             <Route path="/create-product" element={<CreateProduct />} />
+            <Route path="/my-listing" element={<MyListingProduct />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         )}
