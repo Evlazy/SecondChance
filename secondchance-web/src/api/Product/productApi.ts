@@ -1,7 +1,6 @@
 import axiosClient from "../axiosClient";
 
 export type ProductCondition = "BrandNew" | "LikeNew" | "GentlyUsed" | "WellUsed";
-export type ProductStatus = "Unavailable" | "Available" | "Reserved" | "Sold";
 
 export interface Product {
   id: string;
@@ -11,9 +10,16 @@ export interface Product {
   condition: ProductCondition; 
   categoryId: string;
   sellerId: string; 
-  status: ProductStatus;
   isAvailable?: boolean;
   images?: ProductImageResponse[];
+}
+
+export interface UpdateProductDto {
+  title?: string;
+  description?: string;
+  price?: number;
+  condition?: string;
+  categoryId?: string;
 }
 
 export interface ProductImageResponse{
@@ -48,6 +54,11 @@ export const productApi = {
       throw new Error("Failed to create product: No data returned from server");
     }
     return response.data.data
+  },
+
+  updateProduct: async(productId: string, updatedData: UpdateProductDto) => {
+    const response = await axiosClient.put(`/Product/${productId}`, {updatedData});
+    return response.data;
   },
 
   uploadProductImage: async(productId: string, file: File): Promise<ProductImageResponse> => {

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { productApi, type Product } from "../../api/Product/productApi";
 import { getAuthenticatedUser } from "../../utils/jwtHelper";
+import { UpdateProductForm } from "./UpdateProduct";
 
 export default function MyListingProduct() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
 
   const user = getAuthenticatedUser();
 
@@ -41,6 +43,21 @@ export default function MyListingProduct() {
     fetchProducts();
   }, []);
 
+if (editingProductId) {
+    return (
+      <div style={styles.container}>
+        <button 
+          type="button" 
+          onClick={() => setEditingProductId(null)}
+          style={{ marginBottom: '16px' }}
+        >
+          ← Back to My Listings
+        </button>
+        <UpdateProductForm productId={editingProductId} />
+      </div>
+    );
+  }
+
   return (
     <div style={styles.container}>
       <header style={styles.header}>
@@ -70,9 +87,6 @@ export default function MyListingProduct() {
                 <div style={styles.cardBody}>
                   <div style={styles.cardHeader}>
                     <h3 style={styles.productTitle}>{pro.title}</h3>
-                    {pro.status && (
-                      <span style={styles.statusBadge}>{pro.status}</span>
-                    )}
                   </div>
 
                   {pro.condition && (
@@ -87,6 +101,11 @@ export default function MyListingProduct() {
 
                   <div style={styles.cardFooter}>
                     <span style={styles.price}>${pro.price ?? 0}</span>
+                    <button
+                        type="button"
+                        onClick={() => setEditingProductId(pro.id)}
+                        >Edit
+                        </button>
                   </div>
                 </div>
               </div>

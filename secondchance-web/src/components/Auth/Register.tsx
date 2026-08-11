@@ -15,7 +15,6 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // 1. handleSubmit ONLY handles form processing logic
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -39,7 +38,6 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
       alert('Registration successful! Welcome to SecondChance');
       window.location.href = '/';
     } catch (err: any) {
-      // Unpack your custom ApiResponse wrapper safely
       setError(err.response?.data?.message || 'Registration failed. Please try again later.');
     } finally {
       setLoading(false);
@@ -50,7 +48,6 @@ export default function Register({ onSwitchToLogin }: RegisterProps) {
     <div style={{ maxWidth: '400px', margin: '40px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px', backgroundColor: '#fff' }}>
       <h2>Create an Account</h2>
       
-      {/* 🎯 This will now successfully watch your state changes and render immediately! */}
       {error && (
         <div style={{ color: '#dc3545', backgroundColor: '#f8d7da', border: '1px solid #f5c6cb', padding: '10px', borderRadius: '4px', marginBottom: '15px' }}>
           {error}

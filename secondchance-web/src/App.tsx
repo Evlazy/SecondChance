@@ -49,7 +49,7 @@ function AppContent() {
           </div>
         )}
       </header>
-      
+
       <main style={{ marginTop: '20px' }}>
         {!hasToken ? (
           view === 'login' ? (

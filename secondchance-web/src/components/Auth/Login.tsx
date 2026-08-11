@@ -28,16 +28,26 @@ export default function Login({ onSwitchToRegister }: LoginProps) {
     }
   };
 
+  const directLogin = async () => {
+    setEmail("test2@email.com");
+    setPassword("P@ssw0rd!1234567");
+  }
+
   return (
-    <div className="auth-card">
-      <h2>Sign in</h2>
-      {error && <p role="alert">{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <label>Email<input type="email" value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" required /></label>
-        <label>Password<input type="password" value={password} onChange={e => setPassword(e.target.value)} autoComplete="current-password" required /></label>
-        <button type="submit" disabled={loading}>{loading ? 'Signing in…' : 'Sign in'}</button>
-      </form>
-      <p>New here? <button type="button" onClick={onSwitchToRegister}>Create an account</button></p>
+    <div>
+      <div className="auth-card">
+        <h2>Sign in</h2>
+        {error && <p role="alert">{error}</p>}
+        <form onSubmit={handleSubmit}>
+          <label>Email<input type="email" value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" required /></label>
+          <label>Password<input type="password" value={password} onChange={e => setPassword(e.target.value)} autoComplete="current-password" required /></label>
+          <button type="submit" disabled={loading}>{loading ? 'Signing in…' : 'Sign in'}</button>
+        </form>
+        <p>New here? <button type="button" onClick={onSwitchToRegister}>Create an account</button></p>
+      </div>
+      <div>
+          <button onClick={directLogin}>Use Test Account</button>
+      </div>
     </div>
   );
 }
