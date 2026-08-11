@@ -57,7 +57,7 @@ export const productApi = {
   },
 
   updateProduct: async(productId: string, updatedData: UpdateProductDto) => {
-    const response = await axiosClient.put(`/Product/${productId}`, {updatedData});
+    const response = await axiosClient.put(`/Product/${productId}`, updatedData);
     return response.data;
   },
 

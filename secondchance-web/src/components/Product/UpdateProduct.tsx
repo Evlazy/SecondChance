@@ -3,7 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { productApi, type ProductCondition, type UpdateProductDto } from "../../api/Product/productApi";
 import { categoryApi, type Categories } from "../../api/Category/categoryApi";
 
-export const UpdateProductForm: React.FC<{ productId: string }> = ({ productId }) => {
+interface UpdateProductFormProps{
+    productId: string;
+    onSuccess?: () => void;
+}
+
+export const UpdateProductForm: React.FC<UpdateProductFormProps> = ({ productId, onSuccess }) => {
     const navigate = useNavigate();
 
     const [title, setTitle] = useState('');
@@ -16,7 +21,8 @@ export const UpdateProductForm: React.FC<{ productId: string }> = ({ productId }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log(title);
+
+        console.log(selectedCategory);
 
         const dto: UpdateProductDto = {
             title,
@@ -28,7 +34,11 @@ export const UpdateProductForm: React.FC<{ productId: string }> = ({ productId }
 
         try {
             await productApi.updateProduct(productId, dto);
-            navigate("/my-listing");
+            if(onSuccess){
+                onSuccess();
+            }else{
+                navigate("/my-listing");
+            }
         } catch (err: any) {
             if (err.response?.status === 401) {
                 setError("You are not logged in.");
@@ -38,12 +48,6 @@ export const UpdateProductForm: React.FC<{ productId: string }> = ({ productId }
                 setError(err.response?.data?.message || "Failed to update product.");
             }
         }
-    };
-
-    const cancelSubmit = (e: React.FormEvent | React.MouseEvent) => {
-        e.preventDefault();
-        setTitle("");
-        navigate("/my-listing");
     };
 
     useEffect(() => {
@@ -128,7 +132,6 @@ export const UpdateProductForm: React.FC<{ productId: string }> = ({ productId }
                 </div>
 
                 <button type="submit">Update Product</button>
-                <button type="button" onClick={cancelSubmit}>Cancel</button>
             </form>
         </div>
     );

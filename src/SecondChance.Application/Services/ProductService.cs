@@ -191,7 +191,6 @@ namespace SecondChance.Application.Services
             };
 
             return dto;
-
         }
 
         public async Task<IEnumerable<ProductImageResponseDto>> GetProductImagesAsync(Guid productId)
@@ -280,6 +279,7 @@ namespace SecondChance.Application.Services
             product.Description = dto.Description;
             product.Price = dto.Price;
             product.Condition = dto.Condition;
+            product.CategoryId = dto.CategoryId;
             product.LastModifiedAt = DateTime.UtcNow;
             product.LastModifiedBy = currentUserId;
 

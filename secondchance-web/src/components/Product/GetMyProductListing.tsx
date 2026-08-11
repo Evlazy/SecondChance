@@ -53,7 +53,11 @@ if (editingProductId) {
         >
           ← Back to My Listings
         </button>
-        <UpdateProductForm productId={editingProductId} />
+        <UpdateProductForm productId={editingProductId}
+          onSuccess={() => {
+            setEditingProductId(null);
+            fetchProducts();
+          }} />
       </div>
     );
   }

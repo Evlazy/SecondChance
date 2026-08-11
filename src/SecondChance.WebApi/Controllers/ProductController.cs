@@ -81,8 +81,10 @@ namespace SecondChance.WebApi.Controllers
 
                 if (string.IsNullOrEmpty(currentUserId)) return Unauthorized();
 
-                var updatedProduct = await _productService.UpdateProductAsync(id, dto, currentUserId);
-                return Ok(updatedProduct.ToDto());
+                await _productService.UpdateProductAsync(id, dto, currentUserId);
+
+                var updatedProductDto = await _productService.GetProductByIdAsync(id);
+                return Ok(updatedProductDto);
             }
             catch(UnauthorizedAccessException ex)
             {

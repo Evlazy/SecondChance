@@ -120,6 +120,7 @@ namespace SecondChance.Infrastructure.Repository
         {
             return await _dbSet
                 .Include(p => p.Images)
+                .Include(p => p.Category)
                 .Where(p => p.SellerId == sellerId && p.Status == ProductStatus.Available)
                 .ToListAsync();
         }
