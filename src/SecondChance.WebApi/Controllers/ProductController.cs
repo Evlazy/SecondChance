@@ -23,6 +23,7 @@ namespace SecondChance.WebApi.Controllers
             _productService = productService;
         }
 
+        //Done
         [HttpGet("all-categories")]
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAllCategories()
@@ -31,6 +32,7 @@ namespace SecondChance.WebApi.Controllers
             return Ok(result);
         }
 
+        //Done
         [HttpPost("create-product")]
         [Authorize]
         public async Task<ActionResult<ApiResponse<Guid>>> CreateProudct([FromBody] CreateProductDto dto)
@@ -47,6 +49,7 @@ namespace SecondChance.WebApi.Controllers
             return StatusCode(201, result);
         }
 
+        //Done
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> GetProducts([FromQuery] ProductQueryDto query)
@@ -64,6 +67,7 @@ namespace SecondChance.WebApi.Controllers
             });
         }
 
+        //Done
         [HttpGet("{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetProductById(Guid id)
@@ -72,6 +76,7 @@ namespace SecondChance.WebApi.Controllers
             return Ok(product);
         }
 
+        //Done
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] UpdateProductDto dto)
         {
@@ -115,6 +120,7 @@ namespace SecondChance.WebApi.Controllers
             }
         }
 
+        //Done
         [HttpPost("{id}/images")]
         public async Task<IActionResult> UploadImage([FromRoute] Guid id, [FromForm] UploadProductImageDto dto)
         {
@@ -173,6 +179,7 @@ namespace SecondChance.WebApi.Controllers
             }
         }
 
+        //Done
         [HttpGet("{id}/images")]
         [AllowAnonymous]
         public async Task<IActionResult> GetImages([FromRoute] Guid id)
@@ -232,7 +239,6 @@ namespace SecondChance.WebApi.Controllers
             var myFavorites = await _productService.GetUserFavoritesAsync(currentUserId);
             return Ok(myFavorites);
         }
-
 
         //Done
         [HttpGet("my-listing")]

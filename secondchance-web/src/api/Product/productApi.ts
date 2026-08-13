@@ -56,6 +56,11 @@ export const productApi = {
     return response.data.data
   },
 
+  deleteProduct: async(id: string) => {
+    const response = await axiosClient.delete(`/Product/${id}`);
+    return response.data;
+  },
+
   updateProduct: async(productId: string, updatedData: UpdateProductDto) => {
     const response = await axiosClient.put(`/Product/${productId}`, updatedData);
     return response.data;

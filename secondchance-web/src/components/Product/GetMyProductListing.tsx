@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import { productApi, type Product } from "../../api/Product/productApi";
 import { getAuthenticatedUser } from "../../utils/jwtHelper";
 import { UpdateProductForm } from "./UpdateProduct";
+import { DeleteProduct } from './DeleteProduct';
+
 
 export default function MyListingProduct() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
+  const [deleteProductId, setDeleteProductId] = useState<string | null>(null);
 
   const user = getAuthenticatedUser();
 
@@ -62,6 +65,24 @@ if (editingProductId) {
     );
   }
 
+  if(deleteProductId){
+    return(
+      <div>
+        <button
+          type="button"
+          onClick={() => setDeleteProductId(null)}
+          />
+          <DeleteProduct productId={deleteProductId}
+            onSuccess={() => {
+              setDeleteProductId(null);
+              fetchProducts();
+            }} 
+            onCancel={() => setDeleteProductId(null)}
+            />
+      </div>
+    )
+  }
+
   return (
     <div style={styles.container}>
       <header style={styles.header}>
@@ -109,6 +130,14 @@ if (editingProductId) {
                         type="button"
                         onClick={() => setEditingProductId(pro.id)}
                         >Edit
+                        </button>
+                  </div>
+
+                  <div style={styles.cardFooter}>
+                    <button
+                        type="button"
+                        onClick={() => setDeleteProductId(pro.id)}
+                        >Delete
                         </button>
                   </div>
                 </div>
