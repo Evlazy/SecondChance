@@ -29,6 +29,32 @@ export default function ProductList() {
 
   useEffect(() => { fetchProducts(); }, []);
 
+  const handleToggleFavorite = async (productId: string, currentStatus?: boolean) => {
+    setProducts(prevProducts =>
+      prevProducts.map(p =>
+        p.id === productId ? { ...p, isFavorited: !currentStatus } : p
+      )
+    );
+
+    try {
+      const response = await productApi.toggleFavoriteProduct(productId);
+      setProducts(prevProducts =>
+        prevProducts.map(p =>
+          p.id === productId ? { ...p, isFavorited: response.isFavorite } : p
+        )
+      );
+    } catch (err: any) {
+      setProducts(prevProducts =>
+        prevProducts.map(p =>
+          p.id === productId ? { ...p, isFavorited: currentStatus } : p
+        )
+      );
+
+      const errorMessage = err.response?.data?.message || 'Failed to update favorite status.';
+      alert(`⚠️ ${errorMessage}`);
+    }
+  };
+
   const handleFreeze = async (productId: string, title: string) => {
     const reason = window.prompt(`You are taking down item: [${title}]\nPlease enter a reason (required):`);
     if (reason === null) return; 
@@ -95,7 +121,8 @@ export default function ProductList() {
                   flexDirection: 'column', 
                   justifyContent: 'space-between',
                   backgroundColor: '#fff',
-                  overflow: 'hidden' 
+                  overflow: 'hidden',
+                  position: 'relative' // Enables positioning overlay controls if needed
                 }}
               >
                 <div>
@@ -141,7 +168,23 @@ export default function ProductList() {
                 <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#e44d26' }}>${product.price}</span>
                   
-                  <div style={{ display: 'flex', gap: '8px' }}>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    {/* 2. Heart Favorite Button */}
+                    <button
+                      type="button"
+                      onClick={() => handleToggleFavorite(product.id, (product as any).isFavorited)}
+                      title={(product as any).isFavorited ? "Remove from favorites" : "Add to favorites"}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '18px',
+                        padding: '4px 6px'
+                      }}
+                    >
+                      {(product as any).isFavorited ? '❤️' : '🤍'}
+                    </button>
+
                     <Link
                       to={`/products/${product.id}`}
                       style={{ 

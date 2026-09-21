@@ -29,6 +29,10 @@ export interface ProductImageResponse{
   productId: string;
 }
 
+export interface ToggleFavoriteResponse{
+  message: string;
+  isFavorite: boolean;
+}
 
 export const productApi = {
   getAllProducts: async (): Promise<Product[]> => {
@@ -88,6 +92,11 @@ export const productApi = {
 
   getMyListingProducts:  async(): Promise<Product[]> => {
     const response = await axiosClient.get<Product[]>(`/Product/my-listing`);
+    return response.data;
+  },
+
+  toggleFavoriteProduct: async(id: string): Promise<ToggleFavoriteResponse> => {
+    const response = await axiosClient.post<ToggleFavoriteResponse>(`/Product/${id}/favorite`);
     return response.data;
   }
 };

@@ -101,6 +101,7 @@ namespace SecondChance.WebApi.Controllers
             }
         }
 
+        //Done
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(Guid id)
         {
@@ -195,6 +196,7 @@ namespace SecondChance.WebApi.Controllers
             }
         }
 
+        //Need antoher account to test, front end done
         [HttpPost("{id}/favorite")]
         public async Task<IActionResult> ToggleFavorite([FromRoute] Guid id)
         {
